@@ -19,6 +19,8 @@ services:
       start_period: 40s   # Más tiempo antes de comenzar a verificar el estado
 
     restart: unless-stopped
+    networks:
+      - app-network
 
   api:
     build:
@@ -29,16 +31,23 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_KESTREL__ENDPOINTS__HTTP__URL=http://+:80
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       - appdata:/app
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - app-network
 
 volumes:
   appdata:
     driver: local
   sqldata:
     driver: local
+
+networks:
+  app-network:
+    external: true
+    driver: bridge
